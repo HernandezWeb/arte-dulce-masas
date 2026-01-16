@@ -1,0 +1,3 @@
+INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url, categoria) VALUES ('Galleta Marmoleada', 'Deliciosa mezcla de vainilla y chocolate artesanal.', 25.00, 50, 'marmoleada.jpg', 'Clásicas');
+INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url, categoria) VALUES ('Galleta de Avena', 'Opción saludable con pasas y un toque de canela.', 20.00, 30, 'chispas2.jpg', 'Saludables');
+INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url, categoria) VALUES ('Choco-Bomba', 'Rellena de chocolate líquido y trozos de avellana.', 35.00, 20, 'chispas2.jpg', 'Rellenas');

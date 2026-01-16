@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Catálogo - Arte Dulce y Masas</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --color-turquesa: #3ca8a5;
+            --color-turquesa-oscuro: #023030;
+            --color-fondo: #f8fefd;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--color-fondo);
+            margin: 0;
+            padding-top: 80px;
+            /* Ajuste para que la navbar fija no tape el contenido */
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* NAVBAR FIJA */
+        .navbar {
+            background-color: rgba(2, 48, 48, 0.98) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1100 !important;
+        }
+
+        .tasa-badge {
+            background-color: #f19b2c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .btn-salir {
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        /* ESTILO UNIFICADO DE BOTONES DE FILTRO */
+        .filter-btn {
+            border-radius: 50px !important;
+            border: 2px solid var(--color-turquesa) !important;
+            color: var(--color-turquesa) !important;
+            font-weight: 700 !important;
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: var(--color-turquesa) !important;
+            border-color: var(--color-turquesa) !important;
+            color: white !important;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* ANIMACIONES DE LA CESTA */
+        @keyframes basket-jump {
+            0% {
+                transform: scale(1);
+            }
+
+            30% {
+                transform: scale(1.4) rotate(-15deg);
+            }
+
+            50% {
+                transform: scale(1.4) rotate(15deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-basket {
+            animation: basket-jump 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #f19b2c !important;
+        }
+
+        /* EFECTO DE VUELO EN LA CESTA */
+        .vuelo-cesta {
+            position: fixed;
+            color: #f19b2c;
+            font-weight: bold;
+            font-size: 1.1rem;
+            pointer-events: none;
+            z-index: 2000;
+            animation: flyDown 0.8s forwards;
+        }
+
+        @keyframes flyDown {
+            0% {
+                opacity: 0;
+                transform: translateY(0);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" th:href="@{/}">Arte Dulce y Masas</a>
+
+                <div class="ms-auto d-flex align-items-center">
+                    <div id="basket-container" class="position-relative me-3">
+                        <a class="nav-link text-white p-0" th:href="@{/carrito}">
+                            <i id="basket-icon" class="fas fa-shopping-basket fa-lg" style="transition: all 0.3s;"></i>
+                            <span id="basket-count"
+                                class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle"
+                                th:text="${session?.carritoCount ?: 0}">0</span>
+                        </a>
+                    </div>
+
+                    <div class="tasa-badge d-none d-md-block me-3">
+                        <i class="fas fa-university me-1"></i> BCV:
+                        <span th:text="${#numbers.formatDecimal(tasaBCV, 1, 2)}">0.00</span>
+                    </div>
+
+                    <a href="javascript:void(0)" onclick="confirmarSalida()"
+                        class="btn btn-outline-light btn-sm px-3 btn-salir">
+                        <i class="fas fa-sign-out-alt me-1"></i> Salir
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-5">
+        <div class="text-center mb-5">
+            <h2 style="color: var(--color-turquesa-oscuro); font-weight: 700;">Nuestras Delicias</h2>
+            <p class="text-muted">Precios calculados a tasa oficial BCV</p>
+        </div>
+
+        <div class="text-center mb-4">
+            <button class="btn filter-btn active" onclick="filtrar('Todas', this)">Todas</button>
+            <button class="btn filter-btn" onclick="filtrar('Galletas', this)">Galletas</button>
+            <button class="btn filter-btn" onclick="filtrar('Tortas', this)">Tortas</button>
+            <button class="btn filter-btn" onclick="filtrar('Masas', this)">Masas</button>
+            <button class="btn filter-btn" onclick="filtrar('Promociones', this)">Promociones</button>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="contenedor-productos">
+            <div class="col producto-item" th:each="producto : ${productos}" th:data-categoria="${producto.categoria}">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="position-relative">
+                        <div th:if="${producto.categoria == 'Promociones'}" class="position-absolute top-0 start-0 m-2"
+                            style="z-index: 10;">
+                            <span class="badge rounded-pill bg-danger px-3 py-2 fw-bold shadow">
+                                <i class="fas fa-tag me-1"></i> ¡OFERTA!
+                            </span>
+                        </div>
+                        <img th:src="${#strings.startsWith(producto.imagenUrl, 'http')} ? ${producto.imagenUrl} : @{'/images/' + ${producto.imagenUrl}}"
+                            class="card-img-top"
+                            style="height: 220px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                    </div>
+
+                    <div class="card-body text-center d-flex flex-column">
+                        <h5 class="card-title text-dark fw-bold" th:text="${producto.nombre}"></h5>
+                        <p class="card-text text-muted small flex-grow-1" th:text="${producto.descripcion}"></p>
+
+                        <div class="my-3 p-2 rounded" style="background-color: #f8f9fa;">
+                            <div class="price-usd h4 mb-0 fw-bold" style="color: var(--color-turquesa-oscuro);">$<span
+                                    th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}"></span></div>
+                            <div class="price-ves text-muted small">Bs. <span
+                                    th:text="${#numbers.formatDecimal(producto.precio * tasaBCV, 1, 2)}"></span></div>
+                        </div>
+
+                        <form th:action="@{/carrito/agregar}" method="post" class="form-agregar">
+                            <input type="hidden" name="id" th:value="${producto.id}">
+                            <button type="submit" class="btn btn-agregar w-100 rounded-pill text-white fw-bold"
+                                style="background-color: var(--color-turquesa); border: none;">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-5 p-4 text-center text-white" style="background-color: var(--color-turquesa-oscuro);">
+        <p class="mb-0">© 2026 Arte Dulce y Masas - Hecho con amor 🍪</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function filtrar(categoria, boton) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            boton.classList.add('active');
+            document.querySelectorAll('.producto-item').forEach(p => {
+                p.style.display = (categoria === 'Todas' || p.getAttribute('data-categoria') === categoria) ? 'block' : 'none';
+            });
+        }
+
+        function confirmarSalida() {
+            const despedida = document.createElement('div');
+            despedida.innerHTML = `
+                <div style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--color-turquesa-oscuro); color:white; padding:30px; border-radius:20px; z-index:9999; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                    <h2 class="mb-2">¡Vuelve pronto! 🍪</h2>
+                    <p>Gracias por tu visita</p>
+                    <div class="spinner-border text-info mt-2"></div>
+                </div>
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9998;"></div>
+            `;
+            document.body.appendChild(despedida);
+            setTimeout(() => {
+                window.location.href = '/carrito/limpiar-y-salir';
+            }, 1500);
+        }
+
+        document.querySelectorAll('.form-agregar').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const basketIcon = document.getElementById('basket-icon');
+                const basketContainer = document.getElementById('basket-container');
+
+                // Crear mensaje flotante en la cesta
+                const fly = document.createElement('div');
+                fly.className = 'vuelo-cesta';
+                fly.innerHTML = '¡Añadido! 🍪';
+
+                const rect = basketContainer.getBoundingClientRect();
+                fly.style.left = (rect.left - 10) + 'px';
+                fly.style.top = (rect.bottom) + 'px';
+                document.body.appendChild(fly);
+
+                basketIcon.classList.add('animate-basket');
+                setTimeout(() => { form.submit(); }, 700);
+            });
+        });
+    </script>
+</body>
+
+</html>

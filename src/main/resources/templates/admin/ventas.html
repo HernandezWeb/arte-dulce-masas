@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Ventas - Arte Dulce y Masas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #70f3f0;
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+        }
+
+        .header-panel {
+            background: #023030;
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-logout {
+            background-color: #f39c12;
+            color: #023030;
+            font-weight: 700;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128c7e;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="container py-5">
+
+    <div class="header-panel d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-0">Panel Administrativo 🍪</h1>
+            <div class="mt-2">
+                <a th:href="@{/admin/ventas}" class="btn btn-sm btn-outline-light me-2">Ver Ventas</a>
+                <a th:href="@{/admin/productos}" class="btn btn-sm btn-outline-light">Gestionar Galletas</a>
+            </div>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <a th:href="@{/catalogoGalletas}" class="btn btn-light btn-sm px-3">Tienda</a>
+            <a th:href="@{/admin/logout}" class="btn btn-logout btn-sm px-3">Salir</a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Productos</th>
+                    <th>Total ($)</th>
+                    <th>Total (Bs)</th>
+                    <th>Método</th>
+                    <th class="text-center">Estado y Notificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${ventas}">
+                    <td class="fw-bold" th:text="${v.id}"></td>
+                    <td th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${v.cliente}"></td>
+                    <td style="font-size: 0.85rem; white-space: pre-wrap; color: #666;" th:text="${v.detalleProductos}">
+                    </td>
+                    <td class="fw-bold text-success" th:text="'$' + ${v.totalUsd}"></td>
+                    <td th:text="'Bs. ' + ${v.totalBs}"></td>
+                    <td>
+                        <span class="badge rounded-pill bg-info text-dark px-3" th:text="${v.metodoPago}"></span>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex flex-column align-items-center gap-2">
+                            <span th:class="${v.estado == 'En el horno' ? 'badge bg-warning text-dark' : 
+                                            v.estado == 'En camino' ? 'badge bg-primary' :
+                                            v.estado == 'Entregado' ? 'badge bg-success' : 'badge bg-secondary'}"
+                                th:text="${v.estado ?: 'Recibido'}" style="min-width: 100px;">
+                            </span>
+
+                            <a th:href="'https://wa.me/' + ${v.telefono} + '?text=¡Hola ' + ${v.cliente} + '! 🍪 Tu pedido de Arte Dulce y Masas ya está: ' + ${v.estado ?: 'Recibido'} + '. ¡Gracias por preferirnos!'"
+                                target="_blank" class="btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Avisar
+                            </a>
+
+                            <div class="btn-group btn-group-sm shadow-sm">
+                                <form th:action="@{/admin/ventas/actualizar-estado}" method="post">
+                                    <input type="hidden" name="id" th:value="${v.id}">
+                                    <input type="hidden" name="nuevoEstado" value="En el horno">
+                                    <button type="submit" class="btn btn-light" title="En el horno">🔥</button>
+                                </form>
+                                <form th:action="@{/admin/ventas/actualizar-estado}" method="post">
+                                    <input type="hidden" name="id" th:value="${v.id}">
+                                    <input type="hidden" name="nuevoEstado" value="En camino">
+                                    <button type="submit" class="btn btn-light" title="En camino">🛵</button>
+                                </form>
+                                <form th:action="@{/admin/ventas/actualizar-estado}" method="post">
+                                    <input type="hidden" name="id" th:value="${v.id}">
+                                    <input type="hidden" name="nuevoEstado" value="Entregado">
+                                    <button type="submit" class="btn btn-light" title="Entregado">✅</button>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(ventas)}" class="text-center py-5">
+            <i class="fas fa-cookie-bite fa-3x text-muted mb-3"></i>
+            <p class="text-muted">Aún no hay ventas registradas.</p>
+        </div>
+    </div>
+</body>
+
+</html>
