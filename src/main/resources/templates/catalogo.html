@@ -148,6 +148,18 @@
                 <a class="navbar-brand fw-bold" th:href="@{/}">Arte Dulce y Masas</a>
 
                 <div class="ms-auto d-flex align-items-center">
+
+                    <form th:action="@{/productos/buscar}" method="get" class="d-flex me-3 shadow-sm">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="nombre" class="form-control border-light bg-dark text-white"
+                                placeholder="¿Qué buscas hoy?" required
+                                style="border-radius: 20px 0 0 20px; min-width: 150px;">
+                            <button class="btn btn-outline-light" type="submit" style="border-radius: 0 20px 20px 0;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+
                     <div id="basket-container" class="position-relative me-3">
                         <a class="nav-link text-white p-0" th:href="@{/carrito}">
                             <i id="basket-icon" class="fas fa-shopping-basket fa-lg" style="transition: all 0.3s;"></i>
@@ -157,7 +169,7 @@
                         </a>
                     </div>
 
-                    <div class="tasa-badge d-none d-md-block me-3">
+                    <div class="tasa-badge d-none d-lg-block me-3">
                         <i class="fas fa-university me-1"></i> BCV:
                         <span th:text="${#numbers.formatDecimal(tasaBCV, 1, 2)}">0.00</span>
                     </div>
@@ -183,6 +195,13 @@
             <button class="btn filter-btn" onclick="filtrar('Tortas', this)">Tortas</button>
             <button class="btn filter-btn" onclick="filtrar('Masas', this)">Masas</button>
             <button class="btn filter-btn" onclick="filtrar('Promociones', this)">Promociones</button>
+        </div>
+
+        <div th:if="${busqueda}" class="container mt-4">
+            <h4 class="text-muted">
+                Resultados para: <span class="text-primary" th:text="${busqueda}"></span>
+                <a th:href="@{/catalogoGalletas}" class="btn btn-sm btn-link text-decoration-none">Ver todo</a>
+            </h4>
         </div>
 
         <div class="row row-cols-1 row-cols-md-3 g-4" id="contenedor-productos">

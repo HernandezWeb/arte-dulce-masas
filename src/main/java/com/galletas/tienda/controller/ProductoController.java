@@ -35,15 +35,6 @@ public class ProductoController {
         return "admin/productos";
     }
 
-    // Guardar o Actualizar producto (save detecta si existe ID)
-    @PostMapping("/guardar")
-    public String guardarProducto(@ModelAttribute Producto producto) {
-        if (producto != null) {
-            productoRepository.save(producto);
-        }
-        return "redirect:/admin/productos";
-    }
-
     @PostMapping("/editar")
     public String editarProducto(@ModelAttribute Producto producto) {
         if (producto != null) {
