@@ -12,12 +12,12 @@
 ## 📸 Vista Previa (Escaparate)
 
 ### 🏠 Experiencia de Usuario e Inicio
-![Home Page](./screenshots/home.jpg)
+![Home Page](./screenshots/home.jng)
 
 ### 🍰 Catálogo Dinámico y Buscador
 | Catálogo General | Motor de Búsqueda |
 |---|---|
-| ![Catálogo](./screenshots/catalogo.jpg) | ![Búsqueda](./screenshots/busqueda.png) |
+| ![Catálogo](./screenshots/catalogo.jng) | ![Búsqueda](./screenshots/busqueda.png) |
 
 ### 📱 Diseño Adaptable (Responsive)
 ![Vista Móvil](./screenshots/vistaTlf.png)
