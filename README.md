@@ -46,6 +46,6 @@ Este sistema resuelve necesidades críticas del comercio digital moderno:
 ---
 📩 **¿Interesado en digitalizar tu negocio o colaborar en un proyecto?**
 
-* 💼 **LinkedIn**: [Darío Junior Hernández Quintero](https://www.linkedin.com/in/dar%C3%ADo-junior-hern%C3%A1ndez-quintero-15b9431ba)
+* 💼 **LinkedIn**: [Darío Junior Hernández Quintero](https://www.linkedin.com/in/dario-junior-hernandez)
 * 🚀 **Workana**: [Contrátame para proyectos Freelance](URL_DE_TU_WORKANA_AQUÍ)
 * 📧 **Email**: [djhquintero9@gmail.com](mailto:djhquintero9@gmail.com)
