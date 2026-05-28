@@ -1,19 +1,25 @@
 package com.galletas.tienda.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.galletas.tienda.model.Producto;
 import com.galletas.tienda.model.Venta;
 import com.galletas.tienda.repository.ProductoRepository;
 import com.galletas.tienda.repository.VentaRepository;
 import com.galletas.tienda.service.TasaService;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/carrito")
@@ -119,13 +125,13 @@ public class CarritoController {
         nuevaVenta.setDetalleProductos(detalles.toString());
         ventaRepository.save(nuevaVenta);
 
-        String nroTelefono = "584122793635";
+        String nroTelefono = "584220313390";
         String mensaje = "Hola Arte Dulce y Masas! Soy " + cliente + ". He realizado un pedido:\n" +
                 detalles.toString() +
                 "\nTotal: $" + String.format("%.2f", totalUsd) + " / Bs. " + String.format("%.2f", totalBs) +
                 "\nPago: " + metodo;
 
-        String urlWhatsapp = "https://wa.me/" + nroTelefono + "?text="
+        String urlWhatsapp = "https://api.whatsapp.com/send?phone=" + nroTelefono + "&text="
                 + java.net.URLEncoder.encode(mensaje, java.nio.charset.StandardCharsets.UTF_8);
 
         model.addAttribute("cliente", cliente);

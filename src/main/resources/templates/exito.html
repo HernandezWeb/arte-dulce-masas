@@ -127,6 +127,26 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Buscamos el botón o enlace que dirige a WhatsApp en tu plantilla
+            const botonWhatsapp = document.querySelector('a[href^="https://api.whatsapp.com"]');
+            
+            if (botonWhatsapp) {
+                const urlOriginal = botonWhatsapp.getAttribute('href');
+                
+                // Detectamos si el usuario NO está en un celular (es decir, está en una PC)
+                const esMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (!esMobile) {
+                    // Si es PC, transformamos el enlace para que vaya directo a WhatsApp Web de navegador
+                    const urlWeb = urlOriginal.replace("api.whatsapp.com/send", "web.whatsapp.com/send");
+                    botonWhatsapp.setAttribute('href', urlWeb);
+                }
+            }
+        });
+    </script>
+
 </body>
 
 </html>
