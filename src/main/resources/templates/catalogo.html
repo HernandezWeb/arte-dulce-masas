@@ -214,9 +214,9 @@
                                 <i class="fas fa-tag me-1"></i> ¡OFERTA!
                             </span>
                         </div>
-                        <img th:src="${#strings.startsWith(producto.imagenUrl, 'http')} ? ${producto.imagenUrl} : @{'/images/' + ${producto.imagenUrl}}"
-                            class="card-img-top"
-                            style="height: 220px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                        <img th:src="${producto.imagenUrl}" class="card-img-top"
+                            style="height: 220px; object-fit: cover; border-radius: 15px 15px 0 0;"
+                            onerror="this.onerror=null;this.src='https://via.placeholder.com/220';">
                     </div>
 
                     <div class="card-body text-center d-flex flex-column">
