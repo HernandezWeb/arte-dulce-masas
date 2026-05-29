@@ -1,11 +1,17 @@
 package com.galletas.tienda.controller;
 
-import com.galletas.tienda.model.Producto;
-import com.galletas.tienda.repository.ProductoRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.galletas.tienda.model.Producto;
+import com.galletas.tienda.repository.ProductoRepository;
 
 @Controller
 @RequestMapping("/admin/productos")
@@ -33,6 +39,15 @@ public class ProductoController {
                 productos.stream().filter(p -> "Promociones".equals(p.getCategoria())).count());
 
         return "admin/productos";
+    }
+
+    // Método necesario para procesar el formulario de nuevo producto
+    @PostMapping("/guardar")
+    public String guardarProducto(@ModelAttribute Producto producto) {
+        if (producto != null) {
+            productoRepository.save(producto);
+        }
+        return "redirect:/admin/productos";
     }
 
     @PostMapping("/editar")
