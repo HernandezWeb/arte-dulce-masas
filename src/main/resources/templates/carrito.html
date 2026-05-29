@@ -194,7 +194,7 @@
                         </small>
                     </div>
 
-                    <form th:action="@{/carrito/finalizar}" method="post">
+                    <form id="formPedido" onsubmit="enviarWhatsApp(event)">
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Nombre y Apellido</label>
                             <input type="text" name="cliente" class="form-control" placeholder="Ej: Juan Pérez"
@@ -230,7 +230,8 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-confirmar text-white w-100 py-3 fw-bold shadow-sm">
+                        <button type="button" onclick="enviarWhatsApp()"
+                            class="btn btn-confirmar text-white w-100 py-3 fw-bold shadow-sm">
                             CONFIRMAR Y ENVIAR PEDIDO <i class="fab fa-whatsapp ms-2"></i>
                         </button>
                     </form>
@@ -255,6 +256,19 @@
             navigator.clipboard.writeText(text).then(() => {
                 alert("¡Copiado!: " + text);
             });
+        }
+    </script>
+    <script>
+        function enviarWhatsApp() {
+            const nombre = document.querySelector('input[name="cliente"]').value;
+            const metodo = document.querySelector('select[name="metodo"]').value;
+            const telefonoNegocio = "584128800673"; // Tu número aquí
+
+            const mensaje = `¡Hola! Mi nombre es ${nombre}. Quiero confirmar mi pedido. Método de pago: ${metodo}.`;
+            const url = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
+
+            // Esto abrirá la App de WhatsApp automáticamente
+            window.location.href = url;
         }
     </script>
 </body>
