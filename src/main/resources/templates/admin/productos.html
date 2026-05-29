@@ -71,8 +71,9 @@
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <div class="col" th:each="p : ${productos}">
                 <div class="card card-producto h-100 p-3 shadow-sm border-0" style="border-radius: 15px;">
-                    <img th:src="${p.imagenUrl}" class="card-img-top rounded" style="height: 150px; object-fit: cover;"
-                        onerror="this.onerror=null;this.src='https://via.placeholder.com/150';">
+                    <img th:src="${producto.imagenUrl}" class="card-img-top"
+                        style="height: 220px; object-fit: cover; border-radius: 15px 15px 0 0;"
+                        onerror="this.onerror=null;this.src='https://via.placeholder.com/220';">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="fw-bold mb-0" th:text="${p.nombre}"></h5>
