@@ -44,7 +44,17 @@ public class ProductoController {
     // Método necesario para procesar el formulario de nuevo producto
     @PostMapping("/guardar")
     public String guardarProducto(@ModelAttribute Producto producto) {
-        if (producto != null) {
+        if (producto != null && producto.getImagenUrl() != null) {
+            String url = producto.getImagenUrl();
+
+            // Si el usuario pegó un link de página de ImgBB (ej: https://ibb.co/ABCD)
+            // Lo convertimos al formato que la API de ImgBB usa para imágenes directas
+            if (url.contains("ibb.co/")) {
+                String id = url.substring(url.lastIndexOf("/") + 1);
+                url = "https://i.ibb.co/" + id + "/image.jpg";
+            }
+
+            producto.setImagenUrl(url);
             productoRepository.save(producto);
         }
         return "redirect:/admin/productos";
