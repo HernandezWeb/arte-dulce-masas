@@ -178,7 +178,7 @@
                     <div class="p-3 mb-4 rounded" style="background-color: #f1fbfb;">
                         <div class="d-flex justify-content-between mb-2 align-items-center">
                             <span>Total USD:</span>
-                            <span class="fw-bold h5 mb-0" style="color: var(--color-turquesa-oscuro);"
+                            <span id="totalPedido" class="fw-bold h5 mb-0" style="color: var(--color-turquesa-oscuro);"
                                 th:text="'$' + ${#numbers.formatDecimal(totalUsd, 1, 2)}">$0.00</span>
                         </div>
 
@@ -213,7 +213,7 @@
                             </select>
                         </div>
 
-                        <div id="infoPagoMovil" class="card-pago-movil mb-4">
+                        <div id="infoPagoMovil" class="card-pago-movil mb-4" style="display:none;">
                             <div class="banco-badge">BANESCO</div>
                             <h6 class="mb-3"><i class="fas fa-mobile-alt me-2"></i> Datos de Pago</h6>
                             <div class="mb-3">
@@ -257,17 +257,16 @@
                 alert("¡Copiado!: " + text);
             });
         }
-    </script>
-    <script>
+
         function enviarWhatsApp() {
             const nombre = document.querySelector('input[name="cliente"]').value;
             const metodo = document.querySelector('select[name="metodo"]').value;
-            const telefonoNegocio = "584220313390"; // Tu número aquí
+            const total = document.getElementById('totalPedido').innerText;
+            const telefonoNegocio = "584220313390";
 
-            const mensaje = `¡Hola! Mi nombre es ${nombre}. Quiero confirmar mi pedido. Método de pago: ${metodo}.`;
+            const mensaje = `Hola Arte Dulce y Masas! Soy ${nombre}. He realizado un pedido:\n\nTotal: ${total}\nPago: ${metodo}`;
             const url = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
 
-            // Esto abrirá la App de WhatsApp automáticamente
             window.location.href = url;
         }
     </script>
