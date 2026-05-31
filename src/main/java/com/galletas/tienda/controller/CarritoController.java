@@ -1,7 +1,9 @@
 package com.galletas.tienda.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.galletas.tienda.model.Producto;
+import com.galletas.tienda.model.Venta;
 import com.galletas.tienda.repository.ProductoRepository;
+import com.galletas.tienda.repository.VentaRepository;
 import com.galletas.tienda.service.TasaService;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +29,7 @@ public class CarritoController {
 
     private final ProductoRepository productoRepository;
     private final TasaService tasaService;
+    private final VentaRepository ventaRepository;
 
     @GetMapping
     public String verCarrito(HttpSession session, Model model) {
@@ -46,11 +51,51 @@ public class CarritoController {
         return "carrito";
     }
 
-    // Ruta corregida: ahora es /carrito/vaciar
     @PostMapping("/vaciar")
     public String vaciarCarrito(HttpSession session) {
         session.removeAttribute("carrito");
         session.setAttribute("carritoCount", 0);
+        return "redirect:/catalogoGalletas";
+    }
+
+    @PostMapping("/procesar-compra")
+    public String procesarCompra(
+            @RequestParam("cliente") String cliente,
+            @RequestParam("telefono") String telefono,
+            @RequestParam("metodo") String metodo,
+            HttpSession session) {
+
+        @SuppressWarnings("unchecked")
+        List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
+
+        if (carrito != null && !carrito.isEmpty()) {
+
+            Venta nuevaVenta = new Venta();
+            nuevaVenta.setCliente(cliente);
+            // Si en tu entidad el teléfono no se muestra en la tabla pero existe, lo
+            // guardamos:
+            // nuevaVenta.setTelefono(telefono);
+            nuevaVenta.setMetodo(metodo);
+            nuevaVenta.setFecha(LocalDateTime.now());
+
+            String nombresProductos = carrito.stream()
+                    .map(p -> "- " + p.getNombre())
+                    .collect(Collectors.joining(", "));
+            nuevaVenta.setProductos(nombresProductos);
+
+            double totalUsd = carrito.stream().mapToDouble(p -> p.getPrecio() != null ? p.getPrecio() : 0.0).sum();
+            double tasaBcv = tasaService.obtenerTasaActual();
+            double totalBs = totalUsd * tasaBcv;
+
+            nuevaVenta.setTotalUsd(totalUsd);
+            nuevaVenta.setTotalBs(totalBs);
+
+            ventaRepository.save(nuevaVenta);
+        }
+
+        session.removeAttribute("carrito");
+        session.setAttribute("carritoCount", 0);
+
         return "redirect:/catalogoGalletas";
     }
 

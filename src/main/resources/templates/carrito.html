@@ -194,8 +194,10 @@
                         </small>
                     </div>
 
-                    <form id="formPedido" th:action="@{/carrito/vaciar}" method="post" onsubmit="enviarWhatsApp()">
+                    <form id="formPedido" th:action="@{/carrito/procesar-compra}" method="post"
+                        onsubmit="enviarWhatsApp(event)">
                         <div class="mb-3">
+
                             <label class="form-label small fw-bold">Nombre y Apellido</label>
                             <input type="text" name="cliente" class="form-control" placeholder="Ej: Juan Pérez"
                                 required>
@@ -257,30 +259,33 @@
             });
         }
 
-        function enviarWhatsApp() {
+        function enviarWhatsApp(event) {
+            // 1. Detiene el envío inmediato para que no choque con WhatsApp
+            event.preventDefault();
+
             const nombre = document.querySelector('input[name="cliente"]').value;
             const metodo = document.querySelector('select[name="metodo"]').value;
             const total = document.getElementById('totalPedido').innerText;
             const telefonoNegocio = "584220313390";
 
-            // Capturar la lista de productos
             const elementosProductos = document.querySelectorAll('.nombre-producto');
             let listaProductos = "";
             elementosProductos.forEach(elemento => {
                 listaProductos += `- ${elemento.innerText.trim()}\n`;
             });
 
-            // Si no hay productos, enviar un texto por defecto
-            if (!listaProductos) {
-                listaProductos = "- Sin productos especificados\n";
-            }
+            if (!listaProductos) listaProductos = "- Sin productos especificados\n";
 
-            // Armar el mensaje incluyendo los productos
             const mensaje = `¡Hola Arte Dulce y Masas! Soy ${nombre}. He realizado un pedido:\n\n*Productos:*\n${listaProductos}\n*Total:* ${total}\n*Método de Pago:* ${metodo}`;
             const url = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
 
-            // Se abre en otra pestaña para permitir que el formulario (action="/carrito/vaciar") se envíe
+            // 2. Abre WhatsApp en una nueva pestaña
             window.open(url, '_blank');
+
+            // 3. Envía los datos a tu base de datos tras medio segundo
+            setTimeout(() => {
+                document.getElementById('formPedido').submit();
+            }, 500);
         }
     </script>
 </body>
