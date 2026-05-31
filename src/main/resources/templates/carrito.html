@@ -194,7 +194,9 @@
                         </small>
                     </div>
 
-                    <form id="formPedido" onsubmit="enviarWhatsApp(event)">
+                    <!-- Cambiamos la acción para que apunte al controlador que vacía el carrito -->
+                    <form id="formPedido" th:action="@{/carrito/vaciar}" method="post" onsubmit="enviarWhatsApp()">
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Nombre y Apellido</label>
                             <input type="text" name="cliente" class="form-control" placeholder="Ej: Juan Pérez"
@@ -230,8 +232,8 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="enviarWhatsApp()"
-                            class="btn btn-confirmar text-white w-100 py-3 fw-bold shadow-sm">
+                        <!-- Cambiamos el tipo a 'submit' para que dispare la acción del formulario -->
+                        <button type="submit" class="btn btn-confirmar text-white w-100 py-3 fw-bold shadow-sm">
                             CONFIRMAR Y ENVIAR PEDIDO <i class="fab fa-whatsapp ms-2"></i>
                         </button>
                     </form>

@@ -2,7 +2,6 @@ package com.galletas.tienda.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.galletas.tienda.model.Producto;
-import com.galletas.tienda.model.Venta;
 import com.galletas.tienda.repository.ProductoRepository;
-import com.galletas.tienda.repository.VentaRepository;
 import com.galletas.tienda.service.TasaService;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +25,6 @@ public class CarritoController {
 
     private final ProductoRepository productoRepository;
     private final TasaService tasaService;
-    private final VentaRepository ventaRepository;
 
     @GetMapping
     public String verCarrito(HttpSession session, Model model) {
@@ -50,14 +46,16 @@ public class CarritoController {
         return "carrito";
     }
 
-    @GetMapping("/limpiar-y-salir")
-    public String limpiarYSalir(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
+    // Ruta corregida: ahora es /carrito/vaciar
+    @PostMapping("/vaciar")
+    public String vaciarCarrito(HttpSession session) {
+        session.removeAttribute("carrito");
+        session.setAttribute("carritoCount", 0);
+        return "redirect:/catalogoGalletas";
     }
 
     @PostMapping("/agregar")
-    public String agregarAlCarrito(@RequestParam(name = "id", required = true) Long id, HttpSession session) {
+    public String agregarAlCarrito(@RequestParam(name = "id") Long id, HttpSession session) {
         @SuppressWarnings("unchecked")
         List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
 
@@ -66,10 +64,7 @@ public class CarritoController {
         }
 
         if (id != null) {
-            Producto producto = productoRepository.findById(id).orElse(null);
-            if (producto != null) {
-                carrito.add(producto);
-            }
+            productoRepository.findById(id).ifPresent(carrito::add);
         }
 
         session.setAttribute("carrito", carrito);
@@ -92,54 +87,9 @@ public class CarritoController {
         return "redirect:/carrito";
     }
 
-    @PostMapping("/finalizar")
-    public String finalizarPedido(
-            @RequestParam("cliente") String cliente,
-            @RequestParam("telefono") String telefono,
-            @RequestParam("metodo") String metodo,
-            HttpSession session,
-            Model model) {
-
-        @SuppressWarnings("unchecked")
-        List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
-
-        if (carrito == null || carrito.isEmpty()) {
-            return "redirect:/catalogoGalletas";
-        }
-
-        double tasaActual = tasaService.obtenerTasaActual();
-        double totalUsd = carrito.stream().mapToDouble(p -> p.getPrecio() != null ? p.getPrecio() : 0.0).sum();
-        double totalBs = totalUsd * tasaActual;
-
-        StringBuilder detalles = new StringBuilder();
-        for (Producto p : carrito) {
-            detalles.append("- ").append(p.getNombre()).append("\n");
-        }
-
-        Venta nuevaVenta = new Venta();
-        nuevaVenta.setCliente(Objects.requireNonNull(cliente));
-        nuevaVenta.setTelefono(Objects.requireNonNull(telefono));
-        nuevaVenta.setTotalUsd(totalUsd);
-        nuevaVenta.setTotalBs(totalBs);
-        nuevaVenta.setMetodoPago(Objects.requireNonNull(metodo));
-        nuevaVenta.setDetalleProductos(detalles.toString());
-        ventaRepository.save(nuevaVenta);
-
-        String nroTelefono = "584220313390";
-        String mensaje = "Hola Arte Dulce y Masas! Soy " + cliente + ". He realizado un pedido:\n" +
-                detalles.toString() +
-                "\nTotal: $" + String.format("%.2f", totalUsd) + " / Bs. " + String.format("%.2f", totalBs) +
-                "\nPago: " + metodo;
-
-        String urlWhatsapp = "https://api.whatsapp.com/send?phone=" + nroTelefono + "&text="
-                + java.net.URLEncoder.encode(mensaje, java.nio.charset.StandardCharsets.UTF_8);
-
-        model.addAttribute("cliente", cliente);
-        model.addAttribute("urlWhatsapp", urlWhatsapp);
-
-        session.removeAttribute("carrito");
-        session.setAttribute("carritoCount", 0);
-
-        return "exito";
+    @GetMapping("/limpiar-y-salir")
+    public String limpiarYSalir(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 }
