@@ -1,6 +1,5 @@
 package com.galletas.tienda.controller;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,18 +68,20 @@ public class CarritoController {
         List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
 
         if (carrito != null && !carrito.isEmpty()) {
-
             Venta nuevaVenta = new Venta();
             nuevaVenta.setCliente(cliente);
-            // Si en tu entidad el teléfono no se muestra en la tabla pero existe, lo
-            // guardamos:
-            // nuevaVenta.setTelefono(telefono);
+            nuevaVenta.setTelefono(telefono);
+
+            // Guardamos en ambos campos para asegurar la compatibilidad con el HTML
+            nuevaVenta.setMetodoPago(metodo);
             nuevaVenta.setMetodo(metodo);
-            nuevaVenta.setFecha(LocalDateTime.now());
 
             String nombresProductos = carrito.stream()
                     .map(p -> "- " + p.getNombre())
                     .collect(Collectors.joining(", "));
+
+            // Guardamos en ambos campos para asegurar la compatibilidad con el HTML
+            nuevaVenta.setDetalleProductos(nombresProductos);
             nuevaVenta.setProductos(nombresProductos);
 
             double totalUsd = carrito.stream().mapToDouble(p -> p.getPrecio() != null ? p.getPrecio() : 0.0).sum();
