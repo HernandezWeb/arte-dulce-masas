@@ -153,7 +153,7 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-cookie-bite text-warning me-3"></i>
                             <div>
-                                <h6 class="mb-0" th:text="${item.nombre}">Producto</h6>
+                                <h6 class="mb-0 nombre-producto" th:text="${item.nombre}">Producto</h6>
                                 <small class="text-muted">Garantía de sabor</small>
                             </div>
                         </div>
@@ -194,9 +194,7 @@
                         </small>
                     </div>
 
-                    <!-- Cambiamos la acción para que apunte al controlador que vacía el carrito -->
                     <form id="formPedido" th:action="@{/carrito/vaciar}" method="post" onsubmit="enviarWhatsApp()">
-
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Nombre y Apellido</label>
                             <input type="text" name="cliente" class="form-control" placeholder="Ej: Juan Pérez"
@@ -232,7 +230,6 @@
                             </div>
                         </div>
 
-                        <!-- Cambiamos el tipo a 'submit' para que dispare la acción del formulario -->
                         <button type="submit" class="btn btn-confirmar text-white w-100 py-3 fw-bold shadow-sm">
                             CONFIRMAR Y ENVIAR PEDIDO <i class="fab fa-whatsapp ms-2"></i>
                         </button>
@@ -266,10 +263,24 @@
             const total = document.getElementById('totalPedido').innerText;
             const telefonoNegocio = "584220313390";
 
-            const mensaje = `Hola Arte Dulce y Masas! Soy ${nombre}. He realizado un pedido:\n\nTotal: ${total}\nPago: ${metodo}`;
+            // Capturar la lista de productos
+            const elementosProductos = document.querySelectorAll('.nombre-producto');
+            let listaProductos = "";
+            elementosProductos.forEach(elemento => {
+                listaProductos += `- ${elemento.innerText.trim()}\n`;
+            });
+
+            // Si no hay productos, enviar un texto por defecto
+            if (!listaProductos) {
+                listaProductos = "- Sin productos especificados\n";
+            }
+
+            // Armar el mensaje incluyendo los productos
+            const mensaje = `¡Hola Arte Dulce y Masas! Soy ${nombre}. He realizado un pedido:\n\n*Productos:*\n${listaProductos}\n*Total:* ${total}\n*Método de Pago:* ${metodo}`;
             const url = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
 
-            window.location.href = url;
+            // Se abre en otra pestaña para permitir que el formulario (action="/carrito/vaciar") se envíe
+            window.open(url, '_blank');
         }
     </script>
 </body>
